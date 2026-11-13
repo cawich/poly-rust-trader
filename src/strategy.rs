@@ -58,7 +58,7 @@ impl StrategyEngine {
     pub fn new(max_buy_price: f64) -> Self {
         Self {
             max_buy_price,
-            simulated_bankroll: 100.00, // $100 starting paper bankroll
+            simulated_bankroll: 10.00, // $100 starting paper bankroll
             open_positions: VecDeque::new(),
         }
     }

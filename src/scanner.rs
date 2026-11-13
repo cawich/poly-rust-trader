@@ -59,6 +59,7 @@ impl PolymarketScanner {
         for asset in assets {
             let spot_price = price_feed.get_binance_spot_price(asset).await.unwrap_or(0.0);
             println!("\n>>> Live Spot Price for {}: ${:.2}", asset.to_uppercase(), spot_price);
+         strategy.resolve_all_positions(asset, spot_price, now);
 
             for (label, secs) in &intervals {
                 let current_start = now - (now % secs);
