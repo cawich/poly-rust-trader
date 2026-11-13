@@ -2,7 +2,7 @@ use reqwest::Client;
 use serde::Deserialize;
 use std::time::{SystemTime, UNIX_EPOCH};
 use crate::strategy::StrategyEngine;
-use crate::pricing::PriceFeed; // Import PriceFeed
+use crate::pricing::PriceFeed;
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -37,8 +37,8 @@ impl PolymarketScanner {
 
     pub async fn scan_short_term(
         &self,
-        strategy: &StrategyEngine,
-        price_feed: &PriceFeed, // Pass the price feed object here
+        strategy: &mut StrategyEngine,
+        price_feed: &PriceFeed,
     ) -> Result<usize, reqwest::Error> {
         println!("=== Scanning Short-term Up/Down Markets ===");
         let assets = ["btc", "eth", "sol", "xrp"];
@@ -47,7 +47,6 @@ impl PolymarketScanner {
         let mut found = 0;
 
         for asset in assets {
-            // Fetch the live Binance spot price for THIS specific asset
             let spot_price = price_feed.get_binance_spot_price(asset).await.unwrap_or(0.0);
             println!("\n>>> Live Spot Price for {}: ${:.2}", asset.to_uppercase(), spot_price);
 
@@ -96,7 +95,8 @@ impl PolymarketScanner {
                                     }
                                 }
 
-                                strategy.evaluate_market(asset, up_price, down_price, spot_price);
+                                // Pass current timestamp into strategy evaluation for win/loss resolution
+                                strategy.evaluate_market(asset, up_price, down_price, spot_price, now);
                             }
                         }
                     }

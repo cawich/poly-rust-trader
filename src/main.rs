@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize our modular components
     let scanner = PolymarketScanner::new(client.clone());
     let price_feed = PriceFeed::new(client.clone());
-    let strategy = StrategyEngine::new(0.60); // Max buy price of 60 cents
+    let  mut strategy = StrategyEngine::new(0.60); // Max buy price of 60 cents
 
     let poll_interval_secs = 15;
     println!("Starting Modular Polymarket Autonomous Bot (Multi-Asset)...\n");
@@ -27,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
 
         // Pass both strategy and price_feed into the scanner
-        if let Err(e) = scanner.scan_short_term(&strategy, &price_feed).await {
+        if let Err(e) = scanner.scan_short_term(&mut strategy, &price_feed).await {
             println!("Scanner error: {}", e);
         }
 
