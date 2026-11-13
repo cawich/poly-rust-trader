@@ -39,10 +39,20 @@ impl PolymarketScanner {
         &self,
         strategy: &mut StrategyEngine,
         price_feed: &PriceFeed,
+        interval_mode: &str, // Add this parameter: "5m", "15m", or "all"
     ) -> Result<usize, reqwest::Error> {
         println!("=== Scanning Short-term Up/Down Markets ===");
-        let assets = ["btc", "eth", "sol", "xrp"];
-        let intervals = [("5m", 300u64), ("15m", 900u64)];
+        let assets = ["btc"];
+        //let intervals = [("5m", 300u64), ("15m", 900u64)];
+       
+
+
+        // Dynamically select intervals based on your choice
+        let intervals: Vec<(&str, u64)> = match interval_mode {
+            "5m" => vec![("5m", 300u64)],
+            "15m" => vec![("15m", 900u64)],
+            _ => vec![("5m", 300u64), ("15m", 900u64)], // Default to both
+        };
         let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
         let mut found = 0;
 
@@ -50,7 +60,7 @@ impl PolymarketScanner {
             let spot_price = price_feed.get_binance_spot_price(asset).await.unwrap_or(0.0);
             println!("\n>>> Live Spot Price for {}: ${:.2}", asset.to_uppercase(), spot_price);
 
-            for (label, secs) in intervals {
+            for (label, secs) in &intervals {
                 let current_start = now - (now % secs);
                 for start in [current_start, current_start + secs] {
                     let slug = format!("{}-updown-{}-{}", asset, label, start);

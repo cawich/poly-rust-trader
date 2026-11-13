@@ -27,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
 
         // Pass both strategy and price_feed into the scanner
-        if let Err(e) = scanner.scan_short_term(&mut strategy, &price_feed).await {
+        if let Err(e) = scanner.scan_short_term(&mut strategy, &price_feed,"5m").await {
             println!("Scanner error: {}", e);
         }
 
